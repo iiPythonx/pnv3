@@ -7,6 +7,13 @@ import asyncio
 from typing import Callable
 
 # Handle platform specifics
+MAPPING = {
+    "\x1b]A": "UP",
+    "\x1b]B": "DN",
+    "\x1b]C": "RI",
+    "\x1b]D": "LE",
+}
+
 def setup_linux() -> Callable:
     import tty
     import sys
@@ -18,11 +25,23 @@ def setup_linux() -> Callable:
         fd = sys.stdin.fileno()
         settings = termios.tcgetattr(fd)
         
+        buffer = []
         try:
             tty.setcbreak(fd)
             while True:
                 char = await loop.run_in_executor(None, sys.stdin.read, 1)
-                if char:
+                if char == "\x1b":
+                    buffer.append(char)
+                    continue
+
+                elif buffer:
+                    if char == "[":
+                        continue
+
+                    char = f"\x1b]{char}"
+                    return MAPPING.get(char, char)
+
+                elif char:
                     return char
 
         finally:
