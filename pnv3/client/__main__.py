@@ -3,7 +3,9 @@
 # Modules
 import os
 import signal
+import typing
 import asyncio
+import traceback
 
 from pnv3.client import interface
 from pnv3.client.lib import keypress
@@ -14,8 +16,15 @@ ui, stop = interface.UI(), asyncio.Event()
 def handle_sigint() -> None:
     stop.set()
 
-def exit_interface() -> None:
-    print("Bai bai!\033[?1049l\033[?25h")
+def exit_interface(exception: typing.Optional[Exception] = None) -> None:
+    print("\033[?1049l\033[?25h", end = "")
+    if exception is not None:
+        print(traceback.format_exc())
+        print("Report this at https://github.com/iiPythonx/pnv3.")
+
+    else:
+        print("Bai bai!")
+
     os._exit(0)
 
 async def keypress_loop(ui: interface.UI) -> None:
@@ -36,19 +45,20 @@ async def main() -> None:
         loop.add_signal_handler(signal.SIGINT, handle_sigint)  # Ctrl+C
 
     print("\033[?1049h\033[?25l")
+    try:
+        await ui.render()
+        await stop.wait()
 
-    ui.set_state(interface.State("hello\nworld\nthis\nis\na\ntest\npage\ndesigned\nto\ntest\nmy\nscrolling\nsetup\nhopefully\nit\nworks\nwithout\nissues"))
-    await ui.render()
+        for task in tasks:
+            try:
+                task.cancel()
+                await task
 
-    await stop.wait()
-    [task.cancel() for task in tasks]
+            except asyncio.CancelledError:
+                pass  # This is fine.
 
-    for task in tasks:
-        try:
-            await task
-
-        except asyncio.CancelledError:
-            pass  # This is fine.
+    except Exception as e:
+        return exit_interface(e)
 
     exit_interface()
 
