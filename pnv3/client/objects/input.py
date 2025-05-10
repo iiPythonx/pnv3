@@ -8,7 +8,7 @@ import asyncio
 from pnv3.client.interface import UI
 
 # Initialization
-CHARSET = string.ascii_letters + string.digits + string.punctuation + " "
+CHARSET = string.ascii_letters + string.digits + ".:/"
 
 # Object
 class InputMenu:
