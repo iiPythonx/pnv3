@@ -39,7 +39,6 @@ async def main() -> None:
     if os.name != "nt":
         loop = asyncio.get_running_loop()
         loop.add_signal_handler(signal.SIGINT, handle_sigint)  # Ctrl+C
-        signal.signal(signal.SIGTSTP, signal.SIG_IGN)
 
     print("\033[?1049h\033[?25l")
     try:
