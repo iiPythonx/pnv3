@@ -7,7 +7,9 @@ import typing
 import asyncio
 import textwrap
 
-# Typing
+from pnv3.client import xlen
+
+# Initialization
 class State:
     def __init__(self, content: str, actions: dict[str, dict]) -> None:
         self.content, self.actions = content, actions
@@ -34,13 +36,15 @@ class State:
         self.length, self._should_wrap = len(self.lines), False
 
 def pad(line: str, width: int) -> str:
-    return f"{line}{' ' * (width - len(line))}"
+    return f"{line}{' ' * (width - xlen(line))}"
 
 # Main class
 class UI:
     def __init__(self) -> None:
         self.state: typing.Optional[State] = None
         self.scroll: int = 0
+
+        self._propagate_handlers: list[typing.Callable] = []
 
         self.terminal_size: tuple[int, int] = (0, 0)
         self._last_terminal_size: typing.Optional[tuple[int, int]] = None
@@ -101,6 +105,12 @@ class UI:
         sys.stdout.flush()
 
     # State adjustments
+    def on_propagate(self, function: typing.Callable) -> None:
+        self._propagate_handlers.append(function)
+
+    def remove_propagate(self, function: typing.Callable) -> None:
+        self._propagate_handlers.remove(function)
+
     async def propagate(self, key: str) -> None:
         if self.state is None:
             return
@@ -115,8 +125,13 @@ class UI:
             case "X":
                 raise KeyboardInterrupt
 
-            case _ as k if k in self.state.actions:
-                await self.state.actions[k]["func"](self)
+            case _ as k:
+                if k in self.state.actions:
+                    asyncio.create_task(self.state.actions[k]["func"](self))
+
+                else:
+                    for handler in self._propagate_handlers:
+                        await handler(k)
 
         await self.render()
 

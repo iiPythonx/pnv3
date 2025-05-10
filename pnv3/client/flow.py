@@ -1,11 +1,20 @@
 # Copyright (c) 2025 iiPython
 
 # Modules
-from pnv3.client import __version__
+import logging
+
+from pnv3.client import __version__, xlen
 from pnv3.client.interface import UI, State
 
-async def connect(ui: UI) -> None:
-    await ui.set_content("Sure, I'll connect. If you insist ig.")
+from pnv3.client.lib.input import InputMenu
+from pnv3.client.lib.select import SelectMenu
+
+async def connect_state(ui: UI) -> None:
+    bottom = "If you would like to connect to a custom server, please select \033[32m(custom)\033[0m."
+    while True:
+        response = await SelectMenu(ui, "Please select an address to connect to:", ["iipython.dev", "(custom)"], f"{'─' * xlen(bottom)}\n{bottom}").run()
+        if response == "(custom)":
+            response = await InputMenu(ui, "Type the address you wish to connect to:").run()
 
 async def flow(ui: UI) -> None:
     ui.set_state(State(
@@ -24,7 +33,7 @@ async def flow(ui: UI) -> None:
         {
             "C": {
                 "name": "[C]onnect",
-                "func": connect
+                "func": connect_state
             }
         }
     ))
