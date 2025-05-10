@@ -100,11 +100,11 @@ class UI:
         self.state.rendered = True
 
         sys.stdout.write(f"├{horizontal_line}┤\n")
-        sys.stdout.write(f"│ {pad(' | '.join(action['name'] for action in self.state.actions.values()), cols - 11)} E[x]it │\n")
+        sys.stdout.write(f"│ {pad(' | '.join(action['name'] for action in self.state.actions.values()), cols - 15)} [C+X] Exit │\n")
         sys.stdout.write(f"╰{horizontal_line}╯")
         sys.stdout.flush()
 
-    # State adjustments
+    # Propagation handlers
     def on_propagate(self, function: typing.Callable) -> None:
         self._propagate_handlers.append(function)
 
@@ -115,26 +115,30 @@ class UI:
         if self.state is None:
             return
 
-        match key.upper():
+        import logging
+        logging.debug(key.encode())
+        match key:
             case "DN" if self.scroll <= self.state.length - self.terminal_size[1] + 3:
                 self.scroll += 1
 
             case "UP" if self.scroll:
                 self.scroll -= 1
 
-            case "X":
-                raise KeyboardInterrupt
+            case "\x18":
+                raise KeyboardInterrupt  # CTRL+X
 
-            case _ as k:
-                if k in self.state.actions:
-                    asyncio.create_task(self.state.actions[k]["func"](self))
+            case _:
+                upper = key.upper()
+                if upper in self.state.actions:
+                    asyncio.create_task(self.state.actions[upper]["func"](self))
 
                 else:
                     for handler in self._propagate_handlers:
-                        await handler(k)
+                        await handler(key)
 
         await self.render()
 
+    # State adjustments
     def set_state(self, state: State) -> None:
         self.state, self.scroll = state, 0
 
@@ -148,3 +152,17 @@ class UI:
         # Re-render new content
         self.scroll = 0
         await self.render()
+
+    # Handle actions
+    def get_actions(self) -> dict[str, dict]:
+        if self.state is None:
+            raise RuntimeError("Cannot fetch the actions of an empty state!")
+
+        return self.state.actions
+
+    async def set_actions(self, actions: dict[str, dict]) -> None:
+        if self.state is None:
+            raise RuntimeError("Cannot set the actions of an empty state!")
+
+        self.state.actions = actions
+        await self.render(force = True)

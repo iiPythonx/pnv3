@@ -8,8 +8,7 @@ import asyncio
 import traceback
 
 from pnv3.client import interface
-from pnv3.client.flow import flow
-from pnv3.client.lib import keypress
+from pnv3.client.lib import flow, read
 
 # Initialization
 ui, stop = interface.UI(), asyncio.Event()
@@ -31,7 +30,7 @@ def exit_interface(exception: typing.Optional[Exception] = None) -> None:
 async def keypress_loop(ui: interface.UI) -> None:
     try:
         while True:
-            await ui.propagate(await keypress.read())
+            await ui.propagate(await read())
 
     except asyncio.CancelledError:
         return
@@ -40,6 +39,7 @@ async def main() -> None:
     if os.name != "nt":
         loop = asyncio.get_running_loop()
         loop.add_signal_handler(signal.SIGINT, handle_sigint)  # Ctrl+C
+        signal.signal(signal.SIGTSTP, signal.SIG_IGN)
 
     print("\033[?1049h\033[?25l")
     try:

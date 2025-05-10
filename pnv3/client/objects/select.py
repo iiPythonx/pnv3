@@ -1,10 +1,12 @@
 # Copyright (c) 2025 iiPython
 
+# Modules
 import typing
 import asyncio
 
 from pnv3.client.interface import UI
 
+# Object
 class SelectMenu:
     def __init__(self, ui: UI, prompt: str, options: list[str], footer: typing.Optional[str] = "") -> None:
         self.ui, self.prompt, self.options, self.footer = ui, prompt, options, footer
