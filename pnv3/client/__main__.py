@@ -8,6 +8,7 @@ import asyncio
 import traceback
 
 from pnv3.client import interface
+from pnv3.client.flow import flow
 from pnv3.client.lib import keypress
 
 # Initialization
@@ -36,17 +37,17 @@ async def keypress_loop(ui: interface.UI) -> None:
         return
 
 async def main() -> None:
-    tasks = [
-        asyncio.create_task(ui.watch_terminal()),
-        asyncio.create_task(keypress_loop(ui))
-    ]
     if os.name != "nt":
         loop = asyncio.get_running_loop()
         loop.add_signal_handler(signal.SIGINT, handle_sigint)  # Ctrl+C
 
     print("\033[?1049h\033[?25l")
     try:
-        await ui.render()
+        tasks = [
+            asyncio.create_task(ui.watch_terminal()),
+            asyncio.create_task(keypress_loop(ui)),
+            asyncio.create_task(flow(ui))
+        ]
         await stop.wait()
 
         for task in tasks:

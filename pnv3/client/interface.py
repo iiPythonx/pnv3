@@ -29,7 +29,7 @@ class State:
 
         self.lines = []
         for manual_line in self.content.splitlines():
-            self.lines += textwrap.wrap(manual_line, width = x - 6)
+            self.lines += textwrap.wrap(manual_line, width = x - 6) if manual_line.strip() else [manual_line]
 
         self.length, self._should_wrap = len(self.lines), False
 
@@ -102,15 +102,21 @@ class UI:
 
     # State adjustments
     async def propagate(self, key: str) -> None:
+        if self.state is None:
+            return
+
         match key.upper():
-            case "DN" if (self.state is not None) and (self.scroll <= self.state.length - self.terminal_size[1] + 3):
+            case "DN" if self.scroll <= self.state.length - self.terminal_size[1] + 3:
                 self.scroll += 1
 
             case "UP" if self.scroll:
                 self.scroll -= 1
 
-            case _ as k if (self.state is not None) and (k in self.state.actions):
-                await self.state.actions[k]["func"]()
+            case "X":
+                raise KeyboardInterrupt
+
+            case _ as k if k in self.state.actions:
+                await self.state.actions[k]["func"](self)
 
         await self.render()
 
