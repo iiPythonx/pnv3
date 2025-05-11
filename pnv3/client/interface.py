@@ -99,8 +99,10 @@ class UI:
         draw_content()
         self.state.rendered = True
 
+        action_layout = " | ".join(f"\033[35m{action['name']}\033[0m" for action in self.state.actions.values())
+
         sys.stdout.write(f"├{horizontal_line}┤\n")
-        sys.stdout.write(f"│ {pad(' | '.join(action['name'] for action in self.state.actions.values()), cols - 15)} [C+X] Exit │\n")
+        sys.stdout.write(f"│ {pad(action_layout, cols - 15)} \033[31m[C+X] Exit\033[0m │\n")
         sys.stdout.write(f"╰{horizontal_line}╯")
         sys.stdout.flush()
 

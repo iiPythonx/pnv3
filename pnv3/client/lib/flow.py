@@ -37,7 +37,7 @@ async def flow(ui: UI) -> None:
   A continuation of the original PyNet v3 project.
 
           You are running client \033[35mv{__version__}\033[0m.
-        Press \033[34m[C]\033[0m to connect, \033[34m[X]\033[0m to exit.
+       Press \033[34m[C]\033[0m to connect, \033[34m[C+X]\033[0m to exit.
         """,
         {
             "C": {
