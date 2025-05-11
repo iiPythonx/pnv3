@@ -4,7 +4,7 @@
 from pnv3.client import __version__
 from pnv3.client.interface import UI, State
 
-from pnv3.client.flows import ConnectionFlow
+from .connection import ConnectionFlow
 
 # Constants
 WELCOME_PAGE = f"""\

@@ -8,7 +8,8 @@ import asyncio
 import traceback
 
 from pnv3.client import interface
-from pnv3.client.lib import flow, read
+from pnv3.client.lib import read
+from pnv3.client.flow import flow
 
 # Initialization
 ui, stop = interface.UI(), asyncio.Event()
