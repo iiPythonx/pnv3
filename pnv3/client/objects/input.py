@@ -21,7 +21,7 @@ class InputMenu:
     async def _render(self) -> None:
         await self.ui.set_content(f"{self.prompt}\n  > {self.value}_\n\n{self.footer}")
 
-    async def _set(self, _: UI) -> None:
+    async def _set(self) -> None:
         self.event.set()
 
     async def run(self) -> str | None:

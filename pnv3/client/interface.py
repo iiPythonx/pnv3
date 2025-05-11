@@ -130,7 +130,7 @@ class UI:
             case _:
                 upper = key.upper()
                 if upper in self.state.actions:
-                    asyncio.create_task(self.state.actions[upper]["func"](self))
+                    asyncio.create_task(self.state.actions[upper]["func"]())
 
                 else:
                     for handler in self._propagate_handlers:
@@ -139,8 +139,9 @@ class UI:
         await self.render()
 
     # State adjustments
-    def set_state(self, state: State) -> None:
+    async def set_state(self, state: State) -> None:
         self.state, self.scroll = state, 0
+        await self.render()
 
     async def set_content(self, content: str) -> None:
         if self.state is None:

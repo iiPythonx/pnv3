@@ -10,7 +10,7 @@ class EnterMenu:
         self.ui, self.text = ui, text
         self.event = asyncio.Event()
 
-    async def _set(self, _: UI) -> None:
+    async def _set(self) -> None:
         self.event.set()
 
     async def run(self) -> None:
