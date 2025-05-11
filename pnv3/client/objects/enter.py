@@ -15,7 +15,7 @@ class EnterMenu:
 
     async def run(self) -> None:
         old_actions = self.ui.get_actions()
-        await self.ui.set_actions({"\x11": {"name": "[C+Q] Back", "func": self._set}})
+        await self.ui.set_actions({"\x11": {"name": "[C+Q] Back", "func": self._set()}})
 
         await self.ui.set_content(self.text)
 

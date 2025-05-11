@@ -4,6 +4,7 @@
 from pnv3.client import __version__
 from pnv3.client.interface import UI, State
 
+from .welcome import WelcomeFlow
 from .connection import ConnectionFlow
 
 # Constants
@@ -21,13 +22,17 @@ WELCOME_PAGE = f"""\
 """
 
 # Initialization
+async def connect(ui: UI) -> None:
+    url = await WelcomeFlow(ui).run()
+    await ConnectionFlow(ui, url).run()
+
 async def flow(ui: UI) -> None:
     await ui.set_state(State(
         WELCOME_PAGE,
         {
             "C": {
                 "name": "[C]onnect",
-                "func": ConnectionFlow(ui).run
+                "func": connect(ui)
             }
         }
     ))

@@ -26,7 +26,7 @@ class InputMenu:
 
     async def run(self) -> str | None:
         old_actions = self.ui.get_actions()
-        await self.ui.set_actions({"\x11": {"name": "[C+Q] Back", "func": self._set}})
+        await self.ui.set_actions({"\x11": {"name": "[C+Q] Back", "func": self._set()}})
 
         async def on_propagate(key: str) -> None:
             match key:

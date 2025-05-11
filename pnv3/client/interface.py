@@ -130,7 +130,7 @@ class UI:
             case _:
                 upper = key.upper()
                 if upper in self.state.actions:
-                    asyncio.create_task(self.state.actions[upper]["func"]())
+                    asyncio.create_task(self.state.actions[upper]["func"])
 
                 else:
                     for handler in self._propagate_handlers:
