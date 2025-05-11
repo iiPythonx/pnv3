@@ -117,8 +117,6 @@ class UI:
         if self.state is None:
             return
 
-        import logging
-        logging.debug(key.encode())
         match key:
             case "DN" if self.scroll <= self.state.length - self.terminal_size[1] + 3:
                 self.scroll += 1
