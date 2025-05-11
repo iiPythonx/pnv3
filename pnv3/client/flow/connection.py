@@ -11,4 +11,4 @@ class ConnectionFlow:
         self.connection = Connection(url)
 
     async def run(self) -> None:
-        await self.ui.set_content("Hai!")
+        await self.ui.set_content("Hai! This is the connection flow.")
