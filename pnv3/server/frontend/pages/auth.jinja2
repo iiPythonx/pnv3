@@ -1,4 +1,70 @@
 {% extends "index.jinja2" %}
 {% block content %}
-    <p>This is the auth page.</p>
+
+    <!-- Styling -->
+    <style>
+        #switcher {
+            align-self: end;
+        }
+        #status {
+            color: #ff0000;
+            align-self: center;
+            text-decoration: underline;
+        }
+    </style>
+
+    <!-- Content -->
+    <h3>PNV3</h3>
+    <form>
+        <label for = "hostname">Hostname</label>
+        <input id = "hostname" type = "text" required>
+        <label for = "password">Password</label>
+        <input id = "password" type = "password" required>
+        <button type = "submit">Login</button>
+    </form>
+    <span id = "switcher">No hostname? <a href = "#register" id = "switch-type">Make one here.</a></span>
+    <span id = "status"></span>
+{% endblock %}
+{% block js %}
+    <script>
+
+        // Initialization
+        const button = document.querySelector(`[type = "submit"]`);
+
+        // Handle resetting status
+        const status = document.querySelector("#status");
+        for (const element of document.querySelectorAll("input")) {
+            element.addEventListener("keydown", () => { status.innerText = ""; });
+        }
+
+        // Handle state switching
+        let state = "register";
+        function update() {
+            state = state === "login" ? "register" : "login";
+            document.querySelector("#switcher").innerHTML = `
+                ${state === "login" ? "No hostname" : "Already have a host"}?
+                <a href = "#" id = "switch-type">${state === "login" ? "Make one here." : "Log in here."}</a>
+            `;
+            document.querySelector(`[type = "submit"]`).innerText = state === "login" ? "Login" : "Create Hostname";
+            document.querySelector("#switch-type").addEventListener("click", update);
+            status.innerText = "";
+        }
+
+        update();
+
+        // Event handling
+        document.querySelector("form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            // Handle API response
+            const response = await post(`/v1/${state}`, {
+                hostname: document.querySelector("#hostname").value,
+                password: document.querySelector("#password").value
+            });
+            if (response.code !== 200) return status.innerText = response.data.message;
+
+            document.cookie = `authorization=${response.data.token}; path=/`;
+            window.location.href = "/";
+        });
+    </script>
 {% endblock %}

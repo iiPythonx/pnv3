@@ -2,11 +2,29 @@
 <html lang = "en">
     <head>
         <meta charset = "utf-8">
+
+        <!-- CSS -->
+        <link rel = "stylesheet" href = "/css/main.css" />
+
         <title>PNV3</title>
     </head>
     <body>
         <main>
             {% block content %}{% endblock %}
+
+            <!-- JS -->
+            <script>
+                const post = async (endpoint, data) => {
+                    return await (await fetch(endpoint, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(data)
+                    })).json();
+                }
+            </script>
+            {% block js %}{% endblock %}
         </main>
     </body>
 </html>

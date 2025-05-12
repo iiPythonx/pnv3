@@ -1,0 +1,45 @@
+/* Copyright (c) 2025 iiPython */
+
+* {
+    color: #fff;
+    margin: 0px;
+    font-family: monospace;
+}
+body, html {
+    height: 100%;
+}
+body {
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Element styles */
+h3 {
+    font-size: 22px;
+}
+form {
+    padding: 10px;
+    border: 1px solid #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 300px;
+}
+input, button {
+    background: none;
+    outline: none;
+    border: 1px solid #fff;
+    padding: 5px;
+    transition: background-color .2s ease;
+}
+button:hover {
+    cursor: pointer;
+    background-color: #222222;
+}
