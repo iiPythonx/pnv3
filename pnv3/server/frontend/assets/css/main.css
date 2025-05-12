@@ -43,3 +43,11 @@ button:hover {
     cursor: pointer;
     background-color: #222222;
 }
+
+/* Floating link */
+cite {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    font-style: normal;
+}

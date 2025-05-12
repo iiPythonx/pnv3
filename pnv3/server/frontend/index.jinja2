@@ -11,20 +11,21 @@
     <body>
         <main>
             {% block content %}{% endblock %}
-
-            <!-- JS -->
-            <script>
-                const post = async (endpoint, data) => {
-                    return await (await fetch(endpoint, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(data)
-                    })).json();
-                }
-            </script>
-            {% block js %}{% endblock %}
         </main>
+        <cite>(c) 2025 <a href = "https://github.com/iiPythonx">iiPython</a>, <a href = "https://github.com/iiPythonx/pnv3">PNV3</a></cite>
+
+        <!-- JS -->
+        <script>
+            const post = async (endpoint, data) => {
+                return await (await fetch(endpoint, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                })).json();
+            }
+        </script>
+        {% block js %}{% endblock %}
     </body>
 </html>
