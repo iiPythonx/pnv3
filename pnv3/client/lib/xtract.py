@@ -7,7 +7,7 @@ import textwrap
 # Initialization
 TITLE_REGEX  = re.compile(r"<title>(.+)<\/title>")
 BODY_REGEX   = re.compile(r"<body>(.*)<\/body>", re.S)
-INDENT_REGEX = re.compile(r"^[ \t]*")
+ESCAPE_REGEX = re.compile(r"<(?:(?:red|blue|b)|\/)\>")
 
 # Exceptions
 class InvalidMarkup(Exception):
@@ -16,7 +16,11 @@ class InvalidMarkup(Exception):
 # Handle parsing
 def wrap(text: str, width: int) -> list[str]:
     tags = []
-    text = re.sub(r"<(?:(?:red|blue|b)|\/)\>", lambda match: [tags.append((match.span()[0], match.group())), ""][1], text)
+    def loopback(match: re.Match) -> str:
+        tags.append((match.span()[0], match.group()))
+        return ""
+
+    text = re.sub(ESCAPE_REGEX, loopback, text)
 
     # Check actual tag status
     opening, offset = None, 0
@@ -25,7 +29,6 @@ def wrap(text: str, width: int) -> list[str]:
             if opening is None:
                 raise InvalidMarkup
 
-            # Manage our position offset based on the last tag
             opening = None
 
         elif opening:
