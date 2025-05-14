@@ -107,7 +107,7 @@ class Database:
         if page_file.is_file() or not page_file.is_relative_to(FILE_LOCATION / hostname):
             return "Specified filename is already in use."
 
-        page_file.write_text("")
+        page_file.write_text("<title></title>\n<body>\n</body>")
         return None
 
     def delete_page(self, hostname: str, page: str) -> str | None:

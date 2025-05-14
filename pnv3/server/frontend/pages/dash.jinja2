@@ -4,7 +4,6 @@
 
     <!-- CSS -->
     <link rel = "stylesheet" href = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css">
-    <link rel = "stylesheet" href = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/theme/night.min.css">
     <style>
         main {
             width: calc(100% - 40px);
@@ -71,12 +70,20 @@
             align-items: center;
             justify-content: center;
         }
-        div.CodeMirror, .gap {
-            flex: 1;
-        }
         textarea {
             flex: 1;
             opacity: 0;
+        }
+
+        /* Code editing */
+        div.CodeMirror, .gap {
+            flex: 1;
+        }
+        div.CodeMirror-gutters, div.CodeMirror {
+            background: none;
+        }
+        div.CodeMirror-cursor {
+            border-left: 1px solid #fff;
         }
     </style>
 

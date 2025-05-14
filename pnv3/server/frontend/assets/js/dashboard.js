@@ -24,10 +24,7 @@ new class {
         document.querySelector("#trash-btn").addEventListener("click", () => this.trash());
 
         // Setup code editing
-        this.editor = CodeMirror.fromTextArea(document.querySelector("textarea"), {
-            lineNumbers: true,
-            theme: "night",
-        });
+        this.editor = CodeMirror.fromTextArea(document.querySelector("textarea"), { lineNumbers: true });
         this.editor.on("change", () => { this.unsaved_changes = true; });
     }
 
