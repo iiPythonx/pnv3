@@ -18,7 +18,7 @@ WELCOME_PAGE = f"""<green>\
   A continuation of the original PyNet v3 project.
 
           You are running client <magenta>v{__version__}</>.
-       Press <blue>[C]</> to connect, <blue>[C+X]</> to exit.
+       Press <red>[C]</> to connect, <blue>[C+X]</> to exit.
 """
 
 # Initialization

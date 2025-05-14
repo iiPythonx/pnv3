@@ -3,7 +3,6 @@
 # Modules
 import re
 import textwrap
-import itertools
 
 # Initialization
 ESCAPE_SEQS = {
@@ -56,16 +55,17 @@ def wrap(text: str, width: int) -> list[str]:
 
     # Build new lines
     lines = []
-    while text:
-        lines.append(text[:width])
-        text = text[width:]
+    for line in text.splitlines():
+        line = list(line[0 + i:width + i] for i in range(0, len(line), width))
+        lines += line if line else [""]
 
-    for position, tag in reversed(tags):
-        target_index = position // width
-        target_offset = position - (target_index * width)
-        lines[target_index] = lines[target_index][:target_offset] + tag + lines[target_index][target_offset:]
+    offset, clean_text = 0, "\n".join(lines)
+    for position, tag in tags:
+        position += offset
+        clean_text = clean_text[:position] + tag + clean_text[position:]
+        offset += len(tag)
 
-    return list(itertools.chain.from_iterable([line.splitlines() for line in lines]))
+    return clean_text.splitlines()  # type: ignore | stfu
 
 def parse(input: str, width: int) -> tuple[str | None, list[str]]:
     title, content = (m := TITLE_REGEX.match(input)) and m.group(1), BODY_REGEX.search(input)
