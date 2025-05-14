@@ -42,7 +42,7 @@ class WelcomeFlow:
 
     async def run(self) -> str:
         while True:
-            response = await self.menu(SelectMenu, options = ["iipython.dev", "(custom)"], **self.prompt(
+            response = await self.menu(SelectMenu, options = ["https://pnv3.iipython.dev", "(custom)"], **self.prompt(
                 "Please select an address to connect to:",
                 "If you would like to connect to a custom server, please select \033[32m(custom)\033[0m."
             ))

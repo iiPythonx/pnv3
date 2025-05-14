@@ -1,7 +1,6 @@
 [project]
 name = "pnv3"
-version = "0.1.0"
-description = "Add your description here"
+description = "A revival of the long dead PyNet v3 project."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -12,3 +11,11 @@ dependencies = [
     "jinja2>=3.1.6",
     "uvicorn>=0.34.2",
 ]
+dynamic = ["version"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "pnv3/__init__.py"
