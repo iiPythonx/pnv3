@@ -27,7 +27,6 @@ class WritePayload(FilenamePayload):
 def response(code: int, data: dict) -> JSONResponse:
     return JSONResponse({"code": code, "data": data}, status_code = code)
 
-
 async def get_authorized_hostname(authorization: Annotated[str | None, Cookie()] = None) -> JSONResponse | str:
     if authorization is None:
         return response(401, {"message": "No authorization cookie was sent!"})
