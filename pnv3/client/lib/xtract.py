@@ -5,9 +5,22 @@ import re
 import textwrap
 
 # Initialization
+ESCAPE_SEQS = {
+    "black"  : 30,
+    "red"    : 31,
+    "green"  : 32,
+    "yellow" : 33,
+    "blue"   : 34,
+    "magenta": 35,
+    "cyan"   : 36,
+    "white"  : 37,
+    "/"      :  0,
+}
+
+# Regex
 TITLE_REGEX  = re.compile(r"<title>(.+)<\/title>")
 BODY_REGEX   = re.compile(r"<body>(.*)<\/body>", re.S)
-ESCAPE_REGEX = re.compile(r"<(?:(?:red|blue|b)|\/)\>")
+ESCAPE_REGEX = re.compile(rf"<(?:(?:{'|'.join(ESCAPE_SEQS.keys())})|\/)\>")
 
 # Exceptions
 class InvalidMarkup(Exception):
@@ -20,7 +33,7 @@ def wrap(text: str, width: int) -> list[str]:
         tags.append((match.span()[0], match.group()))
         return ""
 
-    text = re.sub(ESCAPE_REGEX, loopback, text)
+    text = ESCAPE_REGEX.sub(loopback, text)
 
     # Check actual tag status
     opening, offset = None, 0
@@ -60,3 +73,21 @@ def parse(input: str, width: int) -> tuple[str | None, list[str]]:
 
     content = textwrap.dedent(content.group(1)).strip()
     return title, wrap(content, width)
+
+def escape(input: list[str]) -> list[str]:
+    active_escape, escaped_lines = None, []
+    for line in input:
+        last_match = None
+        for match in ESCAPE_REGEX.findall(line):
+            line = line.replace(match, f"\033[{ESCAPE_SEQS[match[1:-1].lower()]}m")
+            last_match = match
+
+        if active_escape is not None:
+            line = f"\033[{ESCAPE_SEQS[active_escape.lower()]}m{line}"
+
+        if last_match is not None:
+            active_escape = None if last_match == "</>" else last_match[1:-1]
+
+        escaped_lines.append(f"{line}\033[0m")
+
+    return escaped_lines

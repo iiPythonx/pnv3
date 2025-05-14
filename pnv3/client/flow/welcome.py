@@ -44,7 +44,7 @@ class WelcomeFlow:
         while True:
             response = await self.menu(SelectMenu, options = ["https://pnv3.iipython.dev", "(custom)"], **self.prompt(
                 "Please select an address to connect to:",
-                "If you would like to connect to a custom server, please select \033[32m(custom)\033[0m."
+                "If you would like to connect to a custom server, please select <green>(custom)</>."
             ))
             if response is None:
                 continue  # This isn't possible, but I'm making pylance happy by doing this.
@@ -53,16 +53,16 @@ class WelcomeFlow:
                 while True:
                     url = await self.menu(InputMenu, **self.prompt(
                         "Type the address you wish to connect to:",
-                        "URL protocol is \033[34moptional\033[0m, if left out it will default to \033[32mhttps://\033[0m."
+                        "URL protocol is <blue>optional</>, if left out it will default to <green>https://</>."
                     ))
                     if url is None:
                         break
 
                     success, response = self.normalize(url)
                     if not success:
-                        await self.menu(EnterMenu, text = "There was an \033[31missue\033[0m while processing your \033[35mURL\033[0m:\n" +\
-                                f"  \033[31m> {response}\033[0m\n\n" +\
-                                f"The \033[35mURL\033[0m you provided: \033[90m{url}\033[0m.")
+                        await self.menu(EnterMenu, text = "There was an <red>issue</> while processing your <magenta>URL</>:\n" +\
+                                f"  <red>> {response}</>\n\n" +\
+                                f"The <magenta>URL</> you provided: \033[90m{url}\033[0m.")
 
                         continue
 

@@ -9,16 +9,16 @@ from .connection import ConnectionFlow
 
 # Constants
 WELCOME_PAGE = f"""\
-            \033[32m _____ _____ _____ ___  \033[0m
-            \033[32m|  _  |   | |  |  |_  | \033[0m
-            \033[32m|   __| | | |  |  |_  | \033[0m
-            \033[32m|__|  |_|___|\\___/|___|\033[0m
+            <green> _____ _____ _____ ___  
+            <green>|  _  |   | |  |  |_  | 
+            <green>|   __| | | |  |  |_  | 
+            <green>|__|  |_|___|\\___/|___|
                        
                       PNV3
   A continuation of the original PyNet v3 project.
 
-          You are running client \033[35mv{__version__}\033[0m.
-       Press \033[34m[C]\033[0m to connect, \033[34m[C+X]\033[0m to exit.
+          You are running client <magenta>v{__version__}</>.
+       Press <blue>[C]</> to connect, <blue>[C+X]</> to exit.
 """
 
 # Initialization

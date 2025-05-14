@@ -5,9 +5,9 @@ import os
 import sys
 import typing
 import asyncio
-import textwrap
 
 from pnv3.client import xlen
+from pnv3.client.lib.xtract import escape, wrap
 
 # Initialization
 class State:
@@ -31,7 +31,7 @@ class State:
 
         self.lines = []
         for manual_line in self.content.splitlines():
-            self.lines += textwrap.wrap(manual_line, width = x - 6) if manual_line.strip() else [manual_line]
+            self.lines += escape(wrap(manual_line, x - 6)) if manual_line.strip() else [manual_line]
 
         self.length, self._should_wrap = len(self.lines), False
 
