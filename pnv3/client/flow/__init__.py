@@ -8,11 +8,11 @@ from .welcome import WelcomeFlow
 from .connection import ConnectionFlow
 
 # Constants
-WELCOME_PAGE = f"""\
-            <green> _____ _____ _____ ___  
-            <green>|  _  |   | |  |  |_  | 
-            <green>|   __| | | |  |  |_  | 
-            <green>|__|  |_|___|\\___/|___|
+WELCOME_PAGE = f"""<green>\
+             _____ _____ _____ ___  
+            |  _  |   | |  |  |_  | 
+            |   __| | | |  |  |_  | 
+            |__|  |_|___|\\___/|___|</>
                        
                       PNV3
   A continuation of the original PyNet v3 project.

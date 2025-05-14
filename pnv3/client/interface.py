@@ -29,10 +29,7 @@ class State:
         if not self._should_wrap:
             return
 
-        self.lines = []
-        for manual_line in self.content.splitlines():
-            self.lines += escape(wrap(manual_line, x - 6)) if manual_line.strip() else [manual_line]
-
+        self.lines = escape(wrap(self.content, x - 6))
         self.length, self._should_wrap = len(self.lines), False
 
 def pad(line: str, width: int) -> str:
