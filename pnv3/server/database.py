@@ -1,6 +1,7 @@
 # Copyright (c) 2025 iiPython
 
 # Modules
+import re
 from pathlib import Path
 
 import argon2
@@ -11,6 +12,15 @@ import aiosqlite
 DATABASE_LOCATION = Path.cwd() / "data"  # TODO: customize using env variable
 if not DATABASE_LOCATION.is_dir():
     DATABASE_LOCATION.mkdir()
+
+FILE_LOCATION = DATABASE_LOCATION / "pages"
+if not FILE_LOCATION.is_dir():
+    FILE_LOCATION.mkdir()
+
+# Regex handling
+HOSTNAME_REGEX = re.compile(r"\w{3,16}")
+PASSWORD_REGEX = re.compile(r"(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{12,}")
+PAGENAME_REGEX = re.compile(r"\w{1,20}\.html")
 
 # Main object
 class Database:
@@ -57,6 +67,12 @@ class Database:
                 return None
 
     async def register_host(self, hostname: str, password: str) -> tuple[str | None, str | None]:
+        if HOSTNAME_REGEX.match(hostname) is None:
+            return None, "Hostname must be 3-16 characters of alphanumerics, including _."
+
+        if PASSWORD_REGEX.match(password) is None:
+            return None, "Password does not meet complexity requirements."
+
         async with self.connection.execute("SELECT * FROM hosts WHERE hostname = ?", (hostname,)) as response:
             if await response.fetchone() is not None:
                 return None, "The specified hostname is taken."
@@ -66,5 +82,47 @@ class Database:
             await self.connection.execute("INSERT INTO hosts VALUES (?, ?, ?)", (hostname, self.hasher.hash(password), token))
             await self.connection.commit()
             return token, None
+
+    # Handle pages
+    def fetch_pages(self, hostname: str) -> list[str] | None:
+        hostname_folder = FILE_LOCATION / hostname
+        if not (hostname_folder.is_dir()) and (hostname_folder.is_relative_to(FILE_LOCATION)):
+            return None
+
+        return [file.with_suffix("").name for file in hostname_folder.iterdir()]
+
+    def fetch_page(self, hostname: str, page: str) -> bytes | None:
+        page_file = FILE_LOCATION / hostname / f"{page.removesuffix('.html')}.html"
+        if not (page_file.is_file() and page_file.is_relative_to(FILE_LOCATION / hostname)):
+            return None
+
+        # I eventually intend on supporting things OTHER then text.
+        return page_file.read_bytes()
+
+    def create_page(self, hostname: str, page: str) -> str | None:
+        if not PAGENAME_REGEX.match(page):
+            return "Specified filename is invalid."
+
+        page_file = FILE_LOCATION / hostname / page
+        if page_file.is_file() or not page_file.is_relative_to(FILE_LOCATION / hostname):
+            return "Specified filename is already in use."
+
+        page_file.write_text("")
+        return None
+
+    def delete_page(self, hostname: str, page: str) -> str | None:
+        page_file = FILE_LOCATION / hostname / page
+        if not page_file.is_file() or not page_file.is_relative_to(FILE_LOCATION / hostname):
+            return "Specified file does not exist on this server."
+
+        return page_file.unlink()
+
+    def write_page(self, hostname: str, filename: str, content: str) -> str | None:
+        page_file = FILE_LOCATION / hostname / filename
+        if not page_file.is_file() or not page_file.is_relative_to(FILE_LOCATION / hostname):
+            return "Specified file does not exist on this server."
+
+        page_file.write_text(content)
+        return None
 
 db = Database()

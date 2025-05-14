@@ -18,7 +18,7 @@ TEMPLATES = Jinja2Templates(directory = SOURCE)
 
 # Routing
 @app.get("/", response_model = None)
-async def route_index(request: Request, authorization: Annotated[str | None, Cookie()] = None):
+async def route_index(request: Request, authorization: Annotated[str | None, Cookie()] = None) -> RedirectResponse | HTMLResponse:
     if authorization is None:
         return RedirectResponse("/auth")
 
@@ -28,8 +28,11 @@ async def route_index(request: Request, authorization: Annotated[str | None, Coo
 
     return TEMPLATES.TemplateResponse(request, "pages/dash.jinja2", {"hostname": hostname})
 
-@app.get("/auth", response_class = HTMLResponse)
-async def route_auth(request: Request):
+@app.get("/auth", response_model = None)
+async def route_auth(request: Request, authorization: Annotated[str | None, Cookie()] = None) -> RedirectResponse | HTMLResponse:
+    if authorization is not None and await db.validate_token(authorization):
+        return RedirectResponse("/")
+
     return TEMPLATES.TemplateResponse(request, "pages/auth.jinja2")
 
 # Handle static assets

@@ -39,6 +39,12 @@ input, button {
     padding: 5px;
     transition: background-color .2s ease;
 }
+button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
 button:hover {
     cursor: pointer;
     background-color: #222222;

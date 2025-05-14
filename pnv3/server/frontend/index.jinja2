@@ -17,7 +17,7 @@
         <!-- JS -->
         <script>
             const post = async (endpoint, data) => {
-                return await (await fetch(endpoint, {
+                return await (await fetch(`/v1/${endpoint}`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
