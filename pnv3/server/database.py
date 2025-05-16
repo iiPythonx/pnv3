@@ -36,6 +36,10 @@ class Database:
                 hash     TEXT,
                 token    TEXT
             );
+            CREATE TABLE IF NOT EXISTS pages (
+                host TEXT,
+                page TEXT
+            )
         """)
 
     async def close(self) -> None:
@@ -99,21 +103,31 @@ class Database:
         # I eventually intend on supporting things OTHER then text.
         return page_file.read_bytes()
 
-    def create_page(self, hostname: str, page: str) -> str | None:
+    async def create_page(self, hostname: str, page: str) -> str | None:
         if not PAGENAME_REGEX.match(page):
             return "Specified filename is invalid."
 
+        # Handle file IO
         page_file = FILE_LOCATION / hostname / page
         if page_file.is_file() or not page_file.is_relative_to(FILE_LOCATION / hostname):
             return "Specified filename is already in use."
 
         page_file.write_text("<title></title>\n<body>\n</body>")
+
+        # Add to database
+        await self.connection.execute("INSERT INTO pages VALUES (?, ?)", (hostname, page.removesuffix(".html")))
+        await self.connection.commit()
+
         return None
 
-    def delete_page(self, hostname: str, page: str) -> str | None:
+    async def delete_page(self, hostname: str, page: str) -> str | None:
         page_file = FILE_LOCATION / hostname / page
         if not page_file.is_file() or not page_file.is_relative_to(FILE_LOCATION / hostname):
             return "Specified file does not exist on this server."
+
+        # Remove from database
+        await self.connection.execute("DELETE FROM pages WHERE host = ? AND page = ?", (hostname, page.removesuffix(".html")))
+        await self.connection.commit()
 
         return page_file.unlink()
 
