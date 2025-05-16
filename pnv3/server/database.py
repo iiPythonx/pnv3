@@ -35,7 +35,9 @@ class Database:
                 hostname TEXT,
                 hash     TEXT,
                 token    TEXT
-            );
+            )
+        """)
+        await self.connection.execute("""
             CREATE TABLE IF NOT EXISTS pages (
                 host TEXT,
                 page TEXT
@@ -84,16 +86,19 @@ class Database:
             token = secrets.token_urlsafe()
 
             await self.connection.execute("INSERT INTO hosts VALUES (?, ?, ?)", (hostname, self.hasher.hash(password), token))
+            await self.create_page(hostname, "index.html")
+
             await self.connection.commit()
             return token, None
 
     # Handle pages
-    def fetch_pages(self, hostname: str) -> list[str] | None:
-        hostname_folder = FILE_LOCATION / hostname
-        if not (hostname_folder.is_dir()) and (hostname_folder.is_relative_to(FILE_LOCATION)):
-            return None
+    async def fetch_pages(self, hostname: str) -> tuple[str] | None:
+        async with self.connection.execute("SELECT * FROM hosts WHERE hostname = ?", (hostname,)) as response:
+            if await response.fetchone() is None:
+                return None
 
-        return [file.with_suffix("").name for file in hostname_folder.iterdir()]
+        async with self.connection.execute("SELECT page FROM pages WHERE host = ?", (hostname,)) as response:
+            return [item[0] for item in await response.fetchall()]  # type: ignore
 
     def fetch_page(self, hostname: str, page: str) -> bytes | None:
         page_file = FILE_LOCATION / hostname / f"{page.removesuffix('.html')}.html"
@@ -112,6 +117,7 @@ class Database:
         if page_file.is_file() or not page_file.is_relative_to(FILE_LOCATION / hostname):
             return "Specified filename is already in use."
 
+        page_file.parent.mkdir(exist_ok = True)
         page_file.write_text("<title></title>\n<body>\n</body>")
 
         # Add to database

@@ -56,7 +56,7 @@ async def api_login(host: HostPayload) -> JSONResponse:
 
 @api.get("/{host:str}/pages")
 async def api_pages(host: str) -> JSONResponse:
-    content = db.fetch_pages(host)
+    content = await db.fetch_pages(host)
     if content is None:
         return response(404, {"message": "Specified host does not exist."})
 
@@ -72,7 +72,7 @@ async def api_page(host: str, page: str) -> JSONResponse | Response:
 
 @api.post("/create")
 async def api_create(data: FilenamePayload, hostname: str = Depends(get_authorized_hostname)) -> JSONResponse:
-    message = db.create_page(hostname, data.filename)
+    message = await db.create_page(hostname, data.filename)
     if message is not None:
         return JSONResponse({"code": 400, "data": {"message": message}}, status_code = 400)
 
@@ -80,7 +80,7 @@ async def api_create(data: FilenamePayload, hostname: str = Depends(get_authoriz
 
 @api.post("/delete")
 async def api_delete(data: FilenamePayload, hostname: str = Depends(get_authorized_hostname)) -> JSONResponse:
-    message = db.delete_page(hostname, data.filename)
+    message = await db.delete_page(hostname, data.filename)
     if message is not None:
         return JSONResponse({"code": 400, "data": {"message": message}}, status_code = 400)
 
