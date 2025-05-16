@@ -67,13 +67,12 @@ def wrap(text: str, width: int) -> list[str]:
 
     return clean_text.splitlines()  # type: ignore | stfu
 
-def parse(input: str, width: int) -> tuple[str | None, list[str]]:
+def parse(input: str) -> tuple[str | None, str]:
     title, content = (m := TITLE_REGEX.match(input)) and m.group(1), BODY_REGEX.search(input)
     if content is None:
-        return title, wrap("This page has no content.", width)
+        return title, "This page has no content."
 
-    content = textwrap.dedent(content.group(1)).strip()
-    return title, wrap(content, width)
+    return title, textwrap.dedent(content.group(1)).strip()
 
 def escape(input: list[str]) -> list[str]:
     active_escape, escaped_lines = None, []
