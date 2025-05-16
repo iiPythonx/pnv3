@@ -145,4 +145,8 @@ class Database:
         page_file.write_text(content)
         return None
 
+    async def search_pages(self, query: str) -> list[str]:
+        async with self.connection.execute("SELECT host, page FROM pages WHERE host LIKE ? OR page LIKE ?", (f"%{query}%",) * 2) as response:
+            return ["::".join(item) for item in await response.fetchall()]
+
 db = Database()

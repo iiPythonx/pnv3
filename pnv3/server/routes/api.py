@@ -23,6 +23,9 @@ class FilenamePayload(BaseModel):
 class WritePayload(FilenamePayload):
     content: str
 
+class SearchPayload(BaseModel):
+    query: str
+
 # Utilities
 def response(code: int, data: dict) -> JSONResponse:
     return JSONResponse({"code": code, "data": data}, status_code = code)
@@ -93,5 +96,9 @@ async def api_write(data: WritePayload, hostname: str = Depends(get_authorized_h
         return JSONResponse({"code": 400, "data": {"message": message}}, status_code = 400)
 
     return JSONResponse({"code": 200})
+
+@api.post("/search")
+async def api_search(data: SearchPayload) -> JSONResponse:
+    return JSONResponse({"code": 200, "data": await db.search_pages(data.query)})
 
 app.include_router(api)
